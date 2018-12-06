@@ -1,0 +1,3 @@
+# server port
+server: 25565
+client: 25566
