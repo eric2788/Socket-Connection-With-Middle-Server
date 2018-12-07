@@ -27,7 +27,8 @@ public class Response extends Thread{
                 writer = new PrintWriter(client.getOutputStream());
                 while (reader.ready()) {
                    String input = reader.readLine();
-                    writer.println(input + " [Server Response]");
+                    writer.println("[Server Response] " + input + " [Server Response]");
+                    System.out.println("response: " + !writer.checkError());
                 }
                 writer.flush();
             }

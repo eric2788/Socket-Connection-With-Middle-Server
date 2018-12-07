@@ -1,16 +1,12 @@
 package com.ericlam.socket.bridge;
 
-import com.ericlam.socket.resources.ConfigManager;
 import com.ericlam.socket.server.CreateServer;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.net.InetSocketAddress;
 import java.net.Socket;
-import java.net.SocketAddress;
-import java.net.SocketTimeoutException;
 
 public class MiddleBridge extends Thread{
     @Override
@@ -33,6 +29,7 @@ public class MiddleBridge extends Thread{
                 } else {
                     System.out.println(">> Client Connected. Establishing Connection...");
                 }
+                create.checkClient();
                 while (true) {
                     BufferedReader serverReader, clientReader;
                     PrintWriter serverWriter, clientWriter;
@@ -77,8 +74,18 @@ public class MiddleBridge extends Thread{
                             }
                             System.out.println("Receive server msg "+serverTxt);
                             clientWriter.println(serverTxt);
-                        clientWriter.flush();
-                        System.out.println("Flushed to client.");
+                        if (!clientWriter.checkError()) {
+                            clientWriter.flush();
+                            System.out.println("Flushed to client.");
+                        } else {
+                            server.close();
+                            break;
+                        }
+                    }
+
+                    if (!create.isClientalive()) {
+                        client.close();
+                        break;
                     }
                 }
             } catch (IOException e) {
